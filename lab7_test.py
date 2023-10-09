@@ -43,7 +43,7 @@ def test_update_nonexistent_user_age(db_facade):
 
 # Падающий тест: попытка получить список пользователей перед добавлением
 def test_get_users_before_adding(db_facade):
-    assert db_facade.get_users() == []
+    assert db_facade.get_users() != []
 
 
 # Падающий тест: попытка добавить пользователя с отрицательным возрастом
