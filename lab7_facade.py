@@ -1,51 +1,48 @@
-import os
+from sqlalchemy import create_engine, Column, Integer, String, Sequence
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-class FileFacade:
+Base = declarative_base()
+
+
+# Определение модели данных
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, Sequence("user_id_seq"), primary_key=True)
+    name = Column(String(50))
+    age = Column(Integer)
+
+
+# Фасад для работы с базой данных
+class DatabaseFacade:
+    def __init__(self, db_url):
+        self.engine = create_engine(db_url)
+        Base.metadata.create_all(self.engine)
+        Session = sessionmaker(bind=self.engine)
+        self.session = Session()
+
+    def add_user(self, name, age):
+        new_user = User(name=name, age=age)
+        self.session.add(new_user)
+        self.session.commit()
+
+    def get_users(self):
+        return self.session.query(User).all()
+
+    def update_user_age(self, user_id, new_age):
+        user = self.session.query(User).filter(User.id == user_id).one()
+        user.age = new_age
+        self.session.commit()
+
+    def __del__(self):
+        self.session.close()
+
+
+class PrintUsersDatabaseFacade:
     def __init__(self):
         pass
 
-    def create_file(self, filename):
-        try:
-            with open(filename, "w") as file:
-                return f"Файл {filename} успешно создан."
-        except Exception as e:
-            return f"Ошибка при создании файла {filename}: {str(e)}"
-
-    def delete_file(self, filename):
-        try:
-            os.remove(filename)
-            return f"Файл {filename} успешно удален."
-        except Exception as e:
-            return f"Ошибка при удалении файла {filename}: {str(e)}"
-
-    def list_files(self, directory):
-        try:
-            files = os.listdir(directory)
-            return f"Список файлов в директории {directory}:\n{', '.join(files)}"
-        except Exception as e:
-            return f"Ошибка при получении списка файлов в директории {directory}: {str(e)}"
-
-# Дополнительный фасад для записи в файл
-class FileWriterFacade:
-    def __init__(self):
-        pass
-
-    def write_to_file(self, filename, content):
-        try:
-            with open(filename, "a") as file:
-                file.write(content + "\n")
-            return f"Строка успешно добавлена в файл {filename}."
-        except Exception as e:
-            return f"Ошибка при записи в файл {filename}: {str(e)}"
-
-# Дополнительный фасад для чтения из файла
-class FileReaderFacade:
-    def __init__(self):
-        pass
-
-    def read_file(self, filename):
-        try:
-            with open(filename, "r") as file:
-                return f"Содержимое файла {filename}:\n{file.read()}"
-        except Exception as e:
-            return f"Ошибка при чтении файла {filename}: {str(e)}"
+    def print_users(self, db_facade):
+        users = db_facade.get_users()
+        for user in users:
+            print(f"User ID: {user.id}, Name: {user.name}, Age: {user.age}")
