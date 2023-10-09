@@ -33,3 +33,20 @@ def test_get_users_multiple_users(db_facade):
     assert len(users) == 2
     assert users[0].name == "Alice"
     assert users[1].name == "Bob"
+
+
+# Падающий тест: попытка обновить возраст несуществующего пользователя
+def test_update_nonexistent_user_age(db_facade):
+    with pytest.raises(Exception):
+        db_facade.update_user_age(1, 26)
+
+
+# Падающий тест: попытка получить список пользователей перед добавлением
+def test_get_users_before_adding(db_facade):
+    assert db_facade.get_users() == []
+
+
+# Падающий тест: попытка добавить пользователя с отрицательным возрастом
+def test_add_user_with_negative_age(db_facade):
+    with pytest.raises(Exception):
+        db_facade.add_user("Alice", -25)
