@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Sequence
+from sqlalchemy import create_engine, Column, Integer, String, Sequence, CheckConstraint
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -10,7 +10,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, Sequence("user_id_seq"), primary_key=True)
     name = Column(String(50))
-    age = Column(Integer)
+    age = Column(Integer, CheckConstraint("age >= 0"))
 
 
 # Фасад для работы с базой данных
