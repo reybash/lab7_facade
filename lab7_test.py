@@ -1,18 +1,11 @@
 import pytest
 from lab7_facade import DatabaseFacade
-from lab7_facade import User
 
 
 @pytest.fixture
 def db_facade():
     db_url = "sqlite:///:memory:"
     return DatabaseFacade(db_url)
-
-
-def clean_up_users(db_facade):
-    yield
-    db_facade.session.query(User).delete()
-    db_facade.session.commit()
 
 
 # Падающий тест: попытка обновить возраст несуществующего пользователя
