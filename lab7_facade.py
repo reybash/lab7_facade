@@ -37,7 +37,7 @@ class DatabaseFacade:
     def __del__(self):
         self.session.close()
 
-
+# Фасад для выода в консоль данных о пользователе из базы данных
 class PrintUsersDatabaseFacade:
     def __init__(self):
         pass
